@@ -1,7 +1,29 @@
 from flask import Flask, jsonify, request
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import app
-from .models import Character, db
+from .models import Character, User, db
+
+
+# Rota para criar um novo usuário
+@app.route("/users", methods=["POST"])
+def signup():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    if username and password:
+        user = User.query.filter_by(username=username).first()
+        if user:
+            return (
+                jsonify({"message": "Usuário já existe. Por favor, faça login."}),
+                200,
+            )
+        user = User(username=username, password=generate_password_hash(password))
+        db.session.add(user)
+        db.session.commit()
+        return jsonify({"id": user.id, "username": user.username}), 201
+    return jsonify({"message": "Usuário ou senha inválidos."}), 400
 
 
 # Rota para criar um novo personagem
