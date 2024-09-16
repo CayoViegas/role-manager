@@ -9,6 +9,13 @@ from . import app
 from .models import Character, User, db
 
 
+# Configuração para retornar JSON com UTF-8
+@app.after_request
+def after_request(response):
+    response.headers["Content-Type"] = "application/json; charset=utf-8"
+    return response
+
+
 # Função de verificação de token
 def token_required(f):
     @wraps(f)
@@ -37,6 +44,11 @@ def signup():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
+
+    if not isinstance(username, str) or len(username) < 3 or len(username) > 50:
+        return jsonify({"message": "Nome de usuário inválido. Deve conter entre 3 e 50 caracteres."}), 400
+    if not isinstance(password, str) or len(password) < 6 or len(password) > 12:
+        return jsonify({"message": "Senha inválida. Deve conter entre 6 e 12 caracteres."}), 400
 
     if username and password:
         user = User.query.filter_by(username=username).first()
@@ -74,7 +86,7 @@ def login():
         token = jwt.encode(
             {
                 "id": user.id,
-                "exp": datetime.now(timezone.utc) + timedelta(minutes=30),
+                "exp": datetime.now(timezone.utc) + timedelta(hours=24),
             },
             "how-to-find-true-love-and-happiness",
             "HS256",
@@ -88,11 +100,27 @@ def login():
 @token_required
 def create_character(current_user):
     data = request.get_json()
+
+    # Validação dos campos
+    name = data.get("name")
+    race = data.get("race")
+    class_ = data.get("class_")
+    level = data.get("level", 1)  # O nível é opcional e tem 1 como valor padrão
+
+    if not isinstance(name, str) or len(name) < 1 or len(name) > 128:
+        return jsonify({"message": "Nome inválido. Deve conter entre 1 e 128 caracteres."}), 400
+    if not isinstance(race, str) or len(race) < 1 or len(race) > 128:
+        return jsonify({"message": "Raça inválida. Deve conter entre 1 e 128 caracteres."}), 400
+    if not isinstance(class_, str) or len(class_) < 1 or len(class_) > 128:
+        return jsonify({"message": "Classe inválida. Deve conter entre 1 e 128 caracteres."}), 400
+    if not isinstance(level, int) or level < 1:
+        return jsonify({"message": "Nível inválido. Deve ser um número inteiro positivo."}), 400
+
     new_character = Character(
-        name=data["name"],
-        race=data["race"],
-        class_=data["class_"],
-        level=data["level"],
+        name=name,
+        race=race,
+        class_=class_,
+        level=level,
         user_id=current_user.id,
     )
     db.session.add(new_character)
@@ -173,10 +201,25 @@ def update_character(current_user, id):
 
     data = request.get_json()
 
-    character.name = data.get("name", character.name)
-    character.race = data.get("race", character.race)
-    character.class_ = data.get("class_", character.class_)
-    character.level = data.get("level", character.level)
+    # Validação dos campos
+    name = data.get("name", character.name)
+    race = data.get("race", character.race)
+    class_ = data.get("class_", character.class_)
+    level = data.get("level", character.level)
+
+    if not isinstance(name, str) or len(name) < 1 or len(name) > 128:
+        return jsonify({"message": "Nome inválido. Deve conter entre 1 e 128 caracteres."}), 400
+    if not isinstance(race, str) or len(race) < 1 or len(race) > 128:
+        return jsonify({"message": "Raça inválida. Deve conter entre 1 e 128 caracteres."}), 400
+    if not isinstance(class_, str) or len(class_) < 1 or len(class_) > 128:
+        return jsonify({"message": "Classe inválida. Deve conter entre 1 e 128 caracteres."}), 400
+    if not isinstance(level, int) or level < 1:
+        return jsonify({"message": "Nível inválido. Deve ser um número inteiro positivo."}), 400
+
+    character.name = name
+    character.race = race
+    character.class_ = class_
+    character.level = level
 
     db.session.commit()
     return (
@@ -205,3 +248,21 @@ def delete_character(current_user, id):
     db.session.delete(character)
     db.session.commit()
     return jsonify({"message": "Personagem deletado com sucesso."}), 200
+
+
+# Rota para deletar um usuário e todos os seus personagens
+@app.route("/users/<int:id>", methods=["DELETE"])
+@token_required
+def delete_user(current_user, id):
+    if current_user.id != id:
+        return jsonify({"message": "Você só pode deletar sua própria conta."}), 403
+
+    user = User.query.filter_by(id=id).first()
+
+    if not user:
+        return jsonify({"message": "Usuário não encontrado."}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": "Usuário e seus personagens foram deletados com sucesso."}), 200
