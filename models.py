@@ -7,8 +7,8 @@ class User(db.Model):
     username = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
 
-    # Relacionamento um-para-muitos: um usuário pode ter vários personagem
-    characters = db.relationship("Character", backref="user", lazy=True)
+    # Relacionamento um-para-muitos: um usuário pode ter vários personagem. Exclusão em cascata
+    characters = db.relationship("Character", backref="user", lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User {self.username}>"

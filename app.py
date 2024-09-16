@@ -248,3 +248,21 @@ def delete_character(current_user, id):
     db.session.delete(character)
     db.session.commit()
     return jsonify({"message": "Personagem deletado com sucesso."}), 200
+
+
+# Rota para deletar um usuário e todos os seus personagens
+@app.route("/users/<int:id>", methods=["DELETE"])
+@token_required
+def delete_user(current_user, id):
+    if current_user.id != id:
+        return jsonify({"message": "Você só pode deletar sua própria conta."}), 403
+
+    user = User.query.filter_by(id=id).first()
+
+    if not user:
+        return jsonify({"message": "Usuário não encontrado."}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": "Usuário e seus personagens foram deletados com sucesso."}), 200
