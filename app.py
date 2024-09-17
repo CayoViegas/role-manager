@@ -44,6 +44,7 @@ def signup():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
+    is_superuser = data.get("is_superuser", False)  # O campo is_superuser é opcional e tem False como valor padrão
 
     if not isinstance(username, str) or len(username) < 3 or len(username) > 50:
         return jsonify({"message": "Nome de usuário inválido. Deve conter entre 3 e 50 caracteres."}), 400
@@ -57,10 +58,10 @@ def signup():
                 jsonify({"message": "Usuário já existe. Por favor, faça login."}),
                 200,
             )
-        user = User(username=username, password=generate_password_hash(password))
+        user = User(username=username, password=generate_password_hash(password), is_superuser=is_superuser)
         db.session.add(user)
         db.session.commit()
-        return jsonify({"id": user.id, "username": user.username}), 201
+        return jsonify({"id": user.id, "username": user.username, "is_superuser": user.is_superuser}), 201
     return jsonify({"message": "Usuário ou senha inválidos."}), 400
 
 
@@ -145,10 +146,14 @@ def create_character(current_user):
 @app.route("/characters", methods=["GET"])
 @token_required
 def get_characters(current_user):
-    characters = current_user.characters
+
+    if current_user.is_superuser:
+        characters = Character.query.all()
+    else:
+        characters = current_user.characters
 
     if not characters:
-        return jsonify({"message": "Usuário não possui personagens."}), 404
+        return jsonify({"message": "Nenhum personagem encontrado."}), 404
 
     return (
         jsonify(
@@ -159,6 +164,7 @@ def get_characters(current_user):
                     "race": character.race,
                     "class": character.class_,
                     "level": character.level,
+                    "user_id": character.user_id,
                 }
                 for character in characters
             ]
@@ -171,7 +177,11 @@ def get_characters(current_user):
 @app.route("/characters/<int:id>", methods=["GET"])
 @token_required
 def get_character(current_user, id):
-    character = Character.query.filter_by(id=id, user_id=current_user.id).first()
+
+    if current_user.is_superuser:
+        character = Character.query.filter_by(id=id).first()
+    else:
+        character = Character.query.filter_by(id=id, user_id=current_user.id).first()
 
     if not character:
         return jsonify({"message": "Personagem não encontrado."}), 404
@@ -240,7 +250,11 @@ def update_character(current_user, id):
 @app.route("/characters/<int:id>", methods=["DELETE"])
 @token_required
 def delete_character(current_user, id):
-    character = Character.query.filter_by(id=id, user_id=current_user.id).first()
+
+    if current_user.is_superuser:
+        character = Character.query.filter_by(id=id).first()
+    else:
+        character = Character.query.filter_by(id=id, user_id=current_user.id).first()
 
     if not character:
         return jsonify({"message": "Personagem não encontrado."}), 404
