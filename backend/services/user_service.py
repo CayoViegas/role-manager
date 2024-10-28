@@ -58,7 +58,7 @@ def login():
             "how-to-find-true-love-and-happiness",
             "HS256",
         )
-        return {"token": token}, 201
+        return {"token": token, "username": user_.username}, 201
     return {"message": "Usuário ou senha inválidos."}, 401
 
 

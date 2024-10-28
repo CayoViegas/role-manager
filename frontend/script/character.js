@@ -19,9 +19,17 @@ async function getCharacters() {
             },
         });
 
+        // Se a resposta for 404, significa que não há personagens cadastrados
+        if (response.status === 404) {
+            document.querySelector("#error-message").textContent = "Nenhum personagem cadastrado";
+            // Ainda assim, exibir o nome do usuário
+            document.querySelector("#username").textContent = localStorage.getItem("username");
+            return;
+        }
+
         if (!response.ok) {
             document.querySelector("#error-message").textContent =
-                "Ainda não existem personagens cadastrados";
+                "Erro ao buscar personagens";
             return;
         }
 
