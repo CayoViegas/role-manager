@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta, timezone
 
-from flask import request
-
 import jwt
-from backend.models.user import User
-from backend import db
+from flask import request
 from werkzeug.security import check_password_hash, generate_password_hash
+
+from backend import db
+from backend.models.user import User
 
 
 def signup():
@@ -31,6 +31,7 @@ def signup():
         db.session.commit()
         return {"id": user_.id, "username": user_.username, "is_superuser": user_.is_superuser}, 201
     return {"message": "Usuário ou senha inválidos."}, 400
+
 
 def login():
     auth = request.json
@@ -59,6 +60,7 @@ def login():
         )
         return {"token": token}, 201
     return {"message": "Usuário ou senha inválidos."}, 401
+
 
 def delete_user(current_user, id):
     if current_user.id != id:

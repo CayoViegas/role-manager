@@ -1,11 +1,9 @@
-
 from flask import Flask, jsonify
-
-from backend.utils import token_required
 
 from backend import app, db
 from backend.models.user import User
-from backend.services.user_service import login, signup, delete_user
+from backend.services.user_service import delete_user, login, signup
+from backend.utils import token_required
 
 
 # Rota para criar um novo usuário
@@ -20,7 +18,6 @@ def signup_route():
 def login_route():
     response, status_code = login()
     return jsonify(response), status_code
-    
 
 
 # Rota para deletar um usuário e todos os seus personagens

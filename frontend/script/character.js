@@ -1,4 +1,4 @@
-BASE_URL = "http://localhost:5000";
+const BASE_URL = "http://localhost:5000";
 
 // Função para obter os personagens e exibir na tela
 async function getCharacters() {
@@ -15,26 +15,30 @@ async function getCharacters() {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
         });
 
         if (!response.ok) {
-            console.error("Erro ao buscar personagens");
+            document.querySelector("#error-message").textContent =
+                "Ainda não existem personagens cadastrados";
             return;
         }
 
         const characters = await response.json();
 
         // Definir o nome do usuário
-        document.querySelector("#username").textContent = localStorage.getItem("username");
+        document.querySelector("#username").textContent =
+            localStorage.getItem("username");
 
         // Exibir os personagens na tela
         const container = document.querySelector("#characters-container");
         container.innerHTML = ""; // Limpar qualquer conteúdo anterior
 
         characters.forEach((character) => {
-            const ownerInfo = character.owner ? `<p>Dono: ${character.owner}</p>` : ""; // Verifica se o dono está disponível
+            const ownerInfo = character.owner
+                ? `<p>Dono: ${character.owner}</p>`
+                : ""; // Verifica se o dono está disponível
 
             const card = `
                 <div class="character-card">

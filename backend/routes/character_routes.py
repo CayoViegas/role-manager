@@ -1,10 +1,15 @@
 from flask import Flask, jsonify
 
-from backend.utils import token_required
-
 from backend import app
 from backend.models.character import Character
-from backend.services.character_service import create_character, get_characters, get_character, update_character, delete_character
+from backend.services.character_service import (
+    create_character,
+    delete_character,
+    get_character,
+    get_characters,
+    update_character,
+)
+from backend.utils import token_required
 
 
 # Rota para criar um novo personagem (agora vinculado ao usuário)
@@ -45,4 +50,3 @@ def update_character_route(current_user, id):
 def delete_character_route(current_user, id):
     response, status = delete_character(current_user, id)
     return jsonify(response), status
-    

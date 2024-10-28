@@ -1,5 +1,6 @@
 from backend import db
 
+
 class Character(db.Model):
     __tablename__ = "characters"
     id = db.Column(db.Integer, primary_key=True)

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <script src="./script/signup.js" defer></script>
+    <link rel="stylesheet" href="./style/style.css">
+</head>
+<body>
+    <header>
+        <h1>Cadastro de Usuário</h1>
+    </header>
+    <main>
+        <form id="signup-form">
+            <input type="text" id="username" name="username" placeholder="Nome de usuário" required minlength="3" maxlength="50">
+            <input type="password" id="password" name="password" placeholder="Senha" required minlength="6" maxlength="12">
+            <label for="role">
+                <input type="checkbox" id="is_superuser" name="is_superuser"> Mestre
+            </label>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p id="signup-message"></p>
+    </main>
+</body>
+</html>

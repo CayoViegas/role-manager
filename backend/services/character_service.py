@@ -1,7 +1,8 @@
 from flask import request
 
-from backend.models.character import Character
 from backend import db
+from backend.models.character import Character
+
 
 def create_character(current_user):
     data = request.get_json()
@@ -32,17 +33,17 @@ def create_character(current_user):
     db.session.commit()
 
     return (
-            {
-                "id": new_character.id,
-                "name": new_character.name,
-                "race": new_character.race,
-                "class": new_character.class_,
-                "level": new_character.level,
-                "user_id": new_character.user_id,
-            }
-        ,
+        {
+            "id": new_character.id,
+            "name": new_character.name,
+            "race": new_character.race,
+            "class": new_character.class_,
+            "level": new_character.level,
+            "user_id": new_character.user_id,
+        },
         201,
     )
+
 
 def get_characters(current_user):
     if current_user.is_superuser:
@@ -54,22 +55,22 @@ def get_characters(current_user):
         return {"message": "Nenhum personagem encontrado."}, 404
 
     return (
-            [
-                {
-                    "id": character.id,
-                    "name": character.name,
-                    "race": character.race,
-                    "class": character.class_,
-                    "level": character.level,
-                    "user_id": character.user_id,
-                    "owner": character.user.username if current_user.is_superuser else None,
-                }
-                for character in characters
-            ]
-        ,
+        [
+            {
+                "id": character.id,
+                "name": character.name,
+                "race": character.race,
+                "class": character.class_,
+                "level": character.level,
+                "user_id": character.user_id,
+                "owner": character.user.username if current_user.is_superuser else None,
+            }
+            for character in characters
+        ],
         200,
     )
-    
+
+
 def get_character(current_user, id):
     if current_user.is_superuser:
         character = Character.query.filter_by(id=id).first()
@@ -80,16 +81,16 @@ def get_character(current_user, id):
         return {"message": "Personagem não encontrado."}, 404
 
     return (
-            {
-                "id": character.id,
-                "name": character.name,
-                "race": character.race,
-                "class": character.class_,
-                "level": character.level,
-            }
-        ,
+        {
+            "id": character.id,
+            "name": character.name,
+            "race": character.race,
+            "class": character.class_,
+            "level": character.level,
+        },
         200,
     )
+
 
 def update_character(current_user, id):
     character = Character.query.filter_by(id=id, user_id=current_user.id).first()
@@ -121,16 +122,16 @@ def update_character(current_user, id):
 
     db.session.commit()
     return (
-            {
-                "id": character.id,
-                "name": character.name,
-                "race": character.race,
-                "class": character.class_,
-                "level": character.level,
-            }
-        ,
+        {
+            "id": character.id,
+            "name": character.name,
+            "race": character.race,
+            "class": character.class_,
+            "level": character.level,
+        },
         200,
     )
+
 
 def delete_character(current_user, id):
     if current_user.is_superuser:
