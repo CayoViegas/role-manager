@@ -14,3 +14,15 @@ repos:
     rev: 5.13.2
     hooks:
     -   id: isort
+        args: ["--profile", "black"]
+-   repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.23.0  # Use the latest stable version
+    hooks:
+    - id: eslint
+      args: ["--config", "./linter/.eslintrc.json", "--fix"]
+-   repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.3.2 # Use the latest stable version
+    hooks:
+    -   id: prettier
+        args: ["--config", "./linter/.prettierrc", "**/*.css"]
+        types_or: [css]

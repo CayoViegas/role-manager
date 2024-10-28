@@ -1,4 +1,5 @@
 from flask import Flask, json
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -9,3 +10,7 @@ json.provider.DefaultJSONProvider.ensure_ascii = False
 
 
 db.init_app(app)
+CORS(app)
+
+
+from backend.routes import character_routes, user_routes
