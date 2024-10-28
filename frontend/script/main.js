@@ -24,7 +24,7 @@ document
 
             if (statusCode === 201 && data.token) {
                 localStorage.setItem("token", data.token);
-                localStorage.setItem("username", username.value); // Armazenar o nome do usuário
+                localStorage.setItem("username", data.username || username); // Armazenar o nome do usuário
                 window.location.href = "characters.html";
             } else {
                 console.error("Erro no login");

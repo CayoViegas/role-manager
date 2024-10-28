@@ -20,7 +20,7 @@ document.querySelector("#signup-form").addEventListener("submit", async function
                 is_superuser: isSuperuser,
             }),
         });
-        
+
         const data = await response.json();
 
         if (response.status === 201) {
