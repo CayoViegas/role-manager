@@ -19,8 +19,8 @@ def create_character(current_user):
         return {"message": "Raça inválida. Deve conter entre 1 e 128 caracteres."}, 400
     if not isinstance(class_, str) or len(class_) < 1 or len(class_) > 128:
         return {"message": "Classe inválida. Deve conter entre 1 e 128 caracteres."}, 400
-    if not isinstance(level, int) or level < 1:
-        return {"message": "Nível inválido. Deve ser um número inteiro positivo."}, 400
+    if not isinstance(level, int) or level < 1 or level > 20:
+        return {"message": "Nível inválido. Deve ser um número inteiro positivo, sendo 20 o máximo."}, 400
 
     new_character = Character(
         name=name,
