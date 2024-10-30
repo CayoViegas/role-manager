@@ -15,8 +15,22 @@
     <main>
         <section id="characters-container">
             <p id="error-message"></p>
-            <button id="create-character-button">Criar Personagem</button>
         </section>
+        <button id="create-character-button">Criar Personagem</button>
     </main>
+
+    <div id="create-character-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Criar Personagem</h2>
+            <form id="create-character-form">
+                <input type="text" id="character-name" placeholder="Nome do Personagem" required minlength="1" maxlength="128">
+                <input type="text" id="character-race" placeholder="Raça" required minlength="1" maxlength="128">
+                <input type="text" id="character-class" placeholder="Classe" required minlength="1" maxlength="128">
+                <input type="number" id="character-level" placeholder="Nível" required min="1" value="1" max="20">
+                <button type="submit">Salvar</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
