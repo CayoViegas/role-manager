@@ -67,6 +67,7 @@ async function getCharacters() {
 function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("userId");
     window.location.href = "index.html";
 }
 
@@ -143,3 +144,74 @@ async function createCharacter(event) {
 
 // Adicionar o evento de submit no formulário de criação de personagem
 document.getElementById("create-character-form").addEventListener("submit", createCharacter);
+
+// Selecionar o modal e os botões do modal de exclusão
+const deleteUserModal = document.getElementById("delete-user-modal");
+const deleteUserButton = document.getElementById("delete-user-button");
+const closeModalButton = document.querySelector(".close-button");
+const confirmDeleteButton = document.getElementById("confirm-delete-user");
+const cancelDeleteButton = document.getElementById("cancel-delete-user");
+
+// Função para abrir o modal de confirmação de exclusão
+function openDeleteUserModal() {
+    deleteUserModal.style.display = "block";
+}
+
+// Função para fechar o modal de confirmação de exclusão
+function closeDeleteUserModal() {
+    deleteUserModal.style.display = "none";
+}
+
+// Evento para abrir o modal de confirmação de exclusão ao clicar no botão de exclusão
+deleteUserButton.addEventListener("click", openDeleteUserModal);
+
+// Eventos para fechar o modal de confirmação de exclusão
+closeModalButton.addEventListener("click", closeDeleteUserModal);
+cancelDeleteButton.addEventListener("click", closeDeleteUserModal);
+
+// Evento para fechar o modal de confirmação de exclusão se o usuário clicar fora dele
+window.addEventListener("click", (event) => {
+    if (event.target === deleteUserModal) {
+        closeDeleteUserModal();
+    }
+});
+
+// Função para deletar o usuário
+async function deleteUser() {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    if (!token || !userId) {
+        console.error("Usuário não autenticado ou ID do usuário não encontrado");
+        return;
+    }
+
+    try {
+        const response = await fetch(BASE_URL + "/users/" + userId, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (response.ok) {
+            alert("Usuário deletado com sucesso.");
+            // Limpar o localStorage e redirecionar para a página de login
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            localStorage.removeItem("userId");
+            window.location.href = "index.html";
+        } else {
+            alert("Erro ao deletar usuário");
+        }
+    } catch (error) {
+        console.error("Erro ao deletar usuário", error);
+        alert("Erro ao conectar com o servidor");
+    }
+}
+
+// Evento para confirmar a exclusão do usuário
+confirmDeleteButton.addEventListener("click", () => {
+    deleteUser();
+    closeDeleteUserModal();
+});

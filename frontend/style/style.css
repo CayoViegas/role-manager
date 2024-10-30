@@ -52,6 +52,7 @@ main {
     font-size: 1em;
 }
 
+/* Modal para criação de personagem */
 .modal {
     display: none; /* Oculto por padrão */
     position: fixed;
@@ -85,4 +86,10 @@ main {
 .close-button:focus {
     color: black;
     cursor: pointer;
+}
+
+#confirm-delete-user,
+#cancel-delete-user {
+    margin: 10px 5px;
+    padding: 10px 20px;
 }

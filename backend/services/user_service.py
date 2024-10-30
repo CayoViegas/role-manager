@@ -7,6 +7,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from backend import db
 from backend.models.user import User
 
+from backend.utils import hash_user_id, decode_hashed_id
+
 
 def signup():
     data = request.get_json()
@@ -58,19 +60,23 @@ def login():
             "how-to-find-true-love-and-happiness",
             "HS256",
         )
-        return {"token": token, "username": user_.username}, 201
+
+        hashed_id = hash_user_id(user_.id)
+
+        return {"token": token, "username": user_.username, "user_id": hashed_id}, 201
     return {"message": "Usuário ou senha inválidos."}, 401
 
 
-def delete_user(current_user, id):
-    if current_user.id != id:
-        return {"message": "Você só pode deletar sua própria conta."}, 403
-
-    user_ = User.query.filter_by(id=id).first()
+def delete_user(current_user, hashed_id):
+    decoded_id = decode_hashed_id(hashed_id)
+    if decoded_id != current_user.id:
+        return {"message": "Você não tem permissão para deletar este usuário."}, 403
+    
+    user_ = User.query.filter_by(id=decoded_id).first()
 
     if not user_:
         return {"message": "Usuário não encontrado."}, 404
-
+    
     db.session.delete(user_)
     db.session.commit()
 
