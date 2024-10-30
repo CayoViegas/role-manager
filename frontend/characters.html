@@ -11,6 +11,7 @@
     <header>
         <h1 id="username-display">Bem-vindo, <span id="username"></span></h1>
         <button id="logout-button">Sair</button>
+        <button id="delete-user-button">Deletar Usuário</button>
     </header>
     <main>
         <section id="characters-container">
@@ -30,6 +31,16 @@
                 <input type="number" id="character-level" placeholder="Nível" required min="1" value="1" max="20">
                 <button type="submit">Salvar</button>
             </form>
+        </div>
+    </div>
+
+    <div id="delete-user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Confirmar Exclusão</h2>
+            <p>Tem certeza que deseja excluir sua conta? Esta ação é irreversível.</p>
+            <button id="confirm-delete-user">Excluir Conta</button>
+            <button id="cancel-delete-user">Cancelar</button>
         </div>
     </div>
 </body>

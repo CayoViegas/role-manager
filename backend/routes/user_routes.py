@@ -21,8 +21,8 @@ def login_route():
 
 
 # Rota para deletar um usuário e todos os seus personagens
-@app.route("/users/<int:id>", methods=["DELETE"])
+@app.route("/users/<hashed_id>", methods=["DELETE"])
 @token_required
-def delete_user_route(current_user, id):
-    response, status_code = delete_user(current_user, id)
+def delete_user_route(current_user, hashed_id):
+    response, status_code = delete_user(current_user, hashed_id)
     return jsonify(response), status_code
